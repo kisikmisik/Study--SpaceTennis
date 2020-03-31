@@ -9,6 +9,10 @@ let animationTime = 20;
 let borderWidth = 15;
 let blockWidth = 80;
 
+
+let yourScore = 0;
+let enemyScore = 0;
+
 //draw canvas and borders
 let drawCanvas = () => {
     ctx.fillStyle = "black";
@@ -19,7 +23,7 @@ let drawCanvas = () => {
 };
 
 // draw a simple circle
-let circle = function (x, y, radius, isFilled) {
+let circle = (x, y, radius, isFilled) => {
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, 2 * Math.PI);
     if (isFilled) {
@@ -29,15 +33,48 @@ let circle = function (x, y, radius, isFilled) {
     }
 };
 
-let checkResult = function (message) {
+// function, that shows some message and stops animation
+let checkResult = message => {
     playing = false;
     ctx.font = "50px Courier";
     ctx.baseLine = "middle";
     ctx.textAlign = "center";
     ctx.fillStyle = "white";
     ctx.fillText(message, width / 2, height / 2);
+};
+
+// draw current score 
+
+let drawScore = () => {
+    ctx.font = "25px Courier";
+    ctx.baseLine = "top";
+    ctx.textAligh = "left";
+    ctx.fillStyle = "green";
+    ctx.fillText("You: " + yourScore, 50, 100);
+    ctx.fillText("Nagibator3000: " + enemyScore, 50, 150);
+};
+
+// artifical intelligence
+let botSpeed = 1; // 1 is hard, 4 is medium, 7 is easy
+let botMove = () => {
+    if (player2.x > ball.x) {
+        player2.x -= 2;
+    } else if (player2.x < ball.x) {
+        player2.x += 2;
+    } else {
+        player2.x += 0;
+    }
 }
 
+// reset game to start position
+let gameReturn = () => {
+    playing = true;
+    ball.x = width / 2;
+    ball.y = height / 2;
+    ball.speed = 7;
+    gameAnimation(); 
+}
+    
 // ball constructor
 class Ball {
     constructor(x, y) {
@@ -45,9 +82,10 @@ class Ball {
         this.y = y;
         this.speed = 7;
         this.yShift = 1;
-        this.xShift = 0.5;
+        this.xShift = Math.random();
     }
 
+// draw ball
     draw() {
         ctx.fillStyle = "white";
         circle(this.x, this.y, 7, true);
@@ -59,11 +97,28 @@ class Ball {
         let isCollidedBottom = this.x >= player1.x - blockWidth / 2 && this.x <= player1.x + blockWidth / 2;
         let isCollidedTop = this.x >= player2.x - blockWidth / 2 && this.x <= player2.x + blockWidth / 2;
 
-        // stop animation and show game over when ball out of canvas
+        // update game points when ball is out of canvas
+        let updateScore = (toWhomScore) => new Promise((resolve, reject) => {
+            setTimeout(() => {
+                toWhomScore++;  
+                checkResult("Score!");
+                resolve();
+            }, 1)
+        });
+
         if (this.y < 0) {
-            setTimeout(() => {checkResult("You Won")}, 200)   
+            updateScore(yourScore).then(() => {
+                setTimeout(() => {
+                    gameReturn();
+                }, 2000)
+            })
+             
         } else if (this.y > height) {
-            setTimeout(() => {checkResult("Game Over")}, 200)
+            updateScore(enemyScore).then(() => {
+                setTimeout(() => {
+                    gameReturn();
+                }, 2000)
+            })
         };
 
         if ((isOutBottom && isCollidedBottom) || (isOutTop && isCollidedTop)) {
@@ -87,13 +142,9 @@ class Ball {
             this.xShift = -(this.xShift);
         }
     }
-
-    botMove() {
-        player2.x = this.x;
-    }
 };
 
-
+// block constructor
 class Player {
     constructor(x, y) {
         this.x = x;
@@ -125,17 +176,24 @@ document.addEventListener("mousemove", (evt) => {
 let ball = new Ball(width / 2, height / 2);
 let player1 = new Player(width / 2, height - 25);
 let player2 = new Player(width / 2, 5);
-let animation = () => {
+
+let gameAnimation = () => {
     if (playing) {
         ctx.clearRect(0, 0, width, height);
         drawCanvas();
         ball.draw();
         ball.move();
-        ball.botMove();
         player1.draw();
         player2.draw();
-        setTimeout(animation, animationTime);
+        setTimeout(gameAnimation, animationTime);
+        drawScore();
     }  
 }
 
-animation();
+let botAnimation = () => {
+    botMove();
+    setTimeout(botAnimation, botSpeed)
+}
+
+botAnimation();
+gameAnimation();
