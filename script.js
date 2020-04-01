@@ -5,7 +5,7 @@ const ctx = canvas.getContext("2d");
 let playing = true;
 let width = canvas.width;
 let height = canvas.height;
-let animationTime = 20;
+let animationTime = 10;
 let borderWidth = 15;
 let blockWidth = 80;
 
@@ -48,22 +48,30 @@ let checkResult = message => {
 let drawScore = () => {
     ctx.font = "25px Courier";
     ctx.baseLine = "top";
-    ctx.textAligh = "left";
-    ctx.fillStyle = "green";
+    ctx.textAlign = "left";
+    ctx.fillStyle = "white";
     ctx.fillText("You: " + yourScore, 50, 100);
-    ctx.fillText("Nagibator3000: " + enemyScore, 50, 150);
+    ctx.fillText("Nagibator2020: " + enemyScore, 50, 150);
 };
 
 // artifical intelligence
-let botSpeed = 1; // 1 is hard, 4 is medium, 7 is easy
+let botSpeed = 10; // 10 is hard
+
 let botMove = () => {
     if (player2.x > ball.x) {
-        player2.x -= 2;
+        if (player2.x - ball.x < 20) {
+            player2.x -= 1; 
+        } else {
+            player2.x -= botSpeed;
+        }
+        
     } else if (player2.x < ball.x) {
-        player2.x += 2;
-    } else {
-        player2.x += 0;
-    }
+        if (ball.x - player2.x < 20) {
+            player2.x += 2; 
+        } else {
+            player2.x += botSpeed;
+        }
+    } 
 }
 
 // reset game to start position
@@ -71,8 +79,19 @@ let gameReturn = () => {
     playing = true;
     ball.x = width / 2;
     ball.y = height / 2;
+    ball.xShift = 0.1;
     ball.speed = 7;
     gameAnimation(); 
+}
+
+//check if somebody is win
+
+let checkWinner = () => {
+    if (yourScore === 10) {
+        checkResult("You won!");
+    } else if (enemyScore === 10) {
+        checkResult("Game Over :(");
+    }
 }
     
 // ball constructor
@@ -80,9 +99,9 @@ class Ball {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.speed = 7;
+        this.speed = 5;
         this.yShift = 1;
-        this.xShift = Math.random();
+        this.xShift = 0;
     }
 
 // draw ball
@@ -94,27 +113,28 @@ class Ball {
     checkBlockCollision() {
         let isOutBottom = this.y >= height - 25; //25 is block height + padding
         let isOutTop = this.y <= 25;
-        let isCollidedBottom = this.x >= player1.x - blockWidth / 2 && this.x <= player1.x + blockWidth / 2;
-        let isCollidedTop = this.x >= player2.x - blockWidth / 2 && this.x <= player2.x + blockWidth / 2;
+        let isCollidedBottom = this.x >= player1.x - blockWidth / 1.6 && this.x <= player1.x + blockWidth / 1.6;
+        let isCollidedTop = this.x >= player2.x - blockWidth / 1.6 && this.x <= player2.x + blockWidth / 1.6;
 
         // update game points when ball is out of canvas
-        let updateScore = (toWhomScore) => new Promise((resolve, reject) => {
+        let updateScore = (message) => new Promise((resolve, reject) => {
             setTimeout(() => {
-                toWhomScore++;  
-                checkResult("Score!");
+                checkResult(message);
                 resolve();
             }, 1)
         });
 
         if (this.y < 0) {
-            updateScore(yourScore).then(() => {
+            updateScore("Score to you!").then(() => {
+                yourScore++;
                 setTimeout(() => {
                     gameReturn();
                 }, 2000)
             })
              
         } else if (this.y > height) {
-            updateScore(enemyScore).then(() => {
+            updateScore("Oooops!").then(() => {
+                enemyScore++;
                 setTimeout(() => {
                     gameReturn();
                 }, 2000)
@@ -135,6 +155,7 @@ class Ball {
         //checks collission with walls and player
         if(this.checkBlockCollision()) {
             this.yShift = -(this.yShift);
+            this.xShift += Math.random() - 0.5;
             this.speed += 0.5;
         }
 
@@ -187,12 +208,13 @@ let gameAnimation = () => {
         player2.draw();
         setTimeout(gameAnimation, animationTime);
         drawScore();
+        checkWinner()
     }  
 }
 
 let botAnimation = () => {
     botMove();
-    setTimeout(botAnimation, botSpeed)
+    setTimeout(botAnimation, 1)
 }
 
 botAnimation();
