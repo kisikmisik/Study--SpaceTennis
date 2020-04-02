@@ -4,10 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Space Tetris v. 0.1 by Vladimir Nofenko</title>
+    <title>Space Tennis v. 1.0 by Vladimir Nofenko</title>
 </head>
 <body>
+    <form action="#" class="settings">
+        <h1>Space Tennis</h1>
+        <p class="version">version 1.0</p>
+        <div class="settings__difficulty">
+            <p class="settings__text">Choose the difficulty:</p>
+            <button class="settings__easy">Easy</button>
+            <button class="settings__medium selected">Medium</button>
+            <button class="settings__nightmare">Impossible</button>
+        </div>
+        <div class="rules">
+            <p class="rules__header">Rules:</p>
+            <ul class="rules__list">
+                <li>Game to 10 points</li>
+                <li>To move use mouse</li>
+            </ul>
+        </div>
+        <button class="settings__start" type="submit">Start</button>
+    </form>
+
     <canvas id="canvas" height="700" width="800"></canvas>
     <script src="script.js"></script>
+    <script src="setup.js"></script>
 </body>
 </html>

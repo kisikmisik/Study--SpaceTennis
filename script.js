@@ -2,16 +2,18 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let playing = true;
-let width = canvas.width;
-let height = canvas.height;
-let animationTime = 10;
-let borderWidth = 15;
-let blockWidth = 80;
+let playing = true; // while this true, animation continues
 
-
+const animationTime = 10;
+let winPoints = 10 // determine score to win or lose 
+let botSpeed = 4; // bot difficulty. 6 is hard, 4 is medium, 3 is easy
 let yourScore = 0;
 let enemyScore = 0;
+
+let width = canvas.width;
+let height = canvas.height;
+const borderWidth = 15;
+const blockWidth = 80;
 
 //draw canvas and borders
 let drawCanvas = () => {
@@ -44,7 +46,6 @@ let checkResult = message => {
 };
 
 // draw current score 
-
 let drawScore = () => {
     ctx.font = "25px Courier";
     ctx.baseLine = "top";
@@ -54,17 +55,14 @@ let drawScore = () => {
     ctx.fillText("Nagibator2020: " + enemyScore, 50, 150);
 };
 
-// artifical intelligence
-let botSpeed = 10; // 10 is hard
-
+// artifical intelligence, bot block listents to the x position ob ball and moves to it
 let botMove = () => {
     if (player2.x > ball.x) {
         if (player2.x - ball.x < 20) {
             player2.x -= 1; 
         } else {
             player2.x -= botSpeed;
-        }
-        
+        }       
     } else if (player2.x < ball.x) {
         if (ball.x - player2.x < 20) {
             player2.x += 2; 
@@ -72,7 +70,7 @@ let botMove = () => {
             player2.x += botSpeed;
         }
     } 
-}
+};
 
 // reset game to start position
 let gameReturn = () => {
@@ -80,26 +78,25 @@ let gameReturn = () => {
     ball.x = width / 2;
     ball.y = height / 2;
     ball.xShift = 0.1;
-    ball.speed = 7;
+    ball.speed = 4;
     gameAnimation(); 
-}
+};
 
 //check if somebody is win
-
 let checkWinner = () => {
-    if (yourScore === 10) {
+    if (yourScore === winPoints) {
         checkResult("You won!");
-    } else if (enemyScore === 10) {
+    } else if (enemyScore === winPoints) {
         checkResult("Game Over :(");
     }
-}
+};
     
 // ball constructor
 class Ball {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.speed = 5;
+        this.speed = 4;
         this.yShift = 1;
         this.xShift = 0;
     }
@@ -110,13 +107,14 @@ class Ball {
         circle(this.x, this.y, 7, true);
     }
 
+// checks
     checkBlockCollision() {
-        let isOutBottom = this.y >= height - 25; //25 is block height + padding
+        let isOutBottom = this.y >= height - 25; //25 is player's height + padding
         let isOutTop = this.y <= 25;
         let isCollidedBottom = this.x >= player1.x - blockWidth / 1.6 && this.x <= player1.x + blockWidth / 1.6;
         let isCollidedTop = this.x >= player2.x - blockWidth / 1.6 && this.x <= player2.x + blockWidth / 1.6;
 
-        // update game points when ball is out of canvas
+        // updates game points when ball is out of canvas and shows afterscore message using Promise
         let updateScore = (message) => new Promise((resolve, reject) => {
             setTimeout(() => {
                 checkResult(message);
@@ -212,6 +210,7 @@ let gameAnimation = () => {
     }  
 }
 
+// bot animation
 let botAnimation = () => {
     botMove();
     setTimeout(botAnimation, 1)
