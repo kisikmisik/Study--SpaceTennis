@@ -26,19 +26,19 @@ start.addEventListener('click', function () {
 });
 
 // difficult buttons clickhandlers
-easy.addEventListener('click', function () {
-    resetSelected(buttonsDiff);
-    easy.classList.add("selected");
-    botSpeed = 3;
-});
+// easy.addEventListener('click', function () {
+//     resetSelected(buttonsDiff);
+//     easy.classList.add("selected");
+//     botSpeed = 3;
+// });
 medium.addEventListener('click', function () {
     resetSelected(buttonsDiff);
     medium.classList.add("selected");
     botSpeed = 4;
 });
-nightmare.addEventListener('click', function () {
-    resetSelected(buttonsDiff);
-    nightmare.classList.add("selected");
-    botSpeed = 6;
-});
+// nightmare.addEventListener('click', function () {
+//     resetSelected(buttonsDiff);
+//     nightmare.classList.add("selected");
+//     botSpeed = 6;
+// });
 

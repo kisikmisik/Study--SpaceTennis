@@ -5,7 +5,7 @@ const ctx = canvas.getContext("2d");
 let playing = true; // while this true, animation continues
 
 const animationTime = 10;
-let winPoints = 10 // determine score to win or lose 
+let winPoints = 5 // determine score to win or lose 
 let botSpeed = 4; // bot difficulty. 6 is hard, 4 is medium, 3 is easy
 let yourScore = 0;
 let enemyScore = 0;
@@ -38,7 +38,7 @@ let circle = (x, y, radius, isFilled) => {
 // function, that shows some message and stops animation
 let checkResult = message => {
     playing = false;
-    ctx.font = "50px Courier";
+    ctx.font = "20px Courier";
     ctx.baseLine = "middle";
     ctx.textAlign = "center";
     ctx.fillStyle = "white";
@@ -51,8 +51,8 @@ let drawScore = () => {
     ctx.baseLine = "top";
     ctx.textAlign = "left";
     ctx.fillStyle = "white";
-    ctx.fillText("You: " + yourScore, 50, 100);
-    ctx.fillText("Nagibator2020: " + enemyScore, 50, 150);
+    ctx.fillText("Ты: " + yourScore, 50, 100);
+    ctx.fillText("Твоя старость: " + enemyScore, 50, 150);
 };
 
 // artifical intelligence, bot block listents to the x position ob ball and moves to it
@@ -85,11 +85,21 @@ let gameReturn = () => {
 //check if somebody is win
 let checkWinner = () => {
     if (yourScore === winPoints) {
-        checkResult("You won!");
+        checkResult("WIN");
+        showPrizePopup()
     } else if (enemyScore === winPoints) {
-        checkResult("Game Over :(");
+        checkResult("Проебал, получается. Перезагружай страницу :(");
     }
 };
+
+showPrizePopup = () => {
+    const e = document.createElement('div');
+    e.classList.add('prize-popup')
+    e.innerHTML = 
+    `<p>Поздравляю, ЕПТА. У тебя получилось выиграть самого легкого бота. <br> Забирай свой подарок. С Днем Старения!</p>
+       <img src="qr-code.jpg" width="200" height="200"> `;
+    document.body.appendChild(e);
+}
     
 // ball constructor
 class Ball {
@@ -123,7 +133,7 @@ class Ball {
         });
 
         if (this.y < 0) {
-            updateScore("Score to you!").then(() => {
+            updateScore("ОЧКО!").then(() => {
                 yourScore++;
                 setTimeout(() => {
                     gameReturn();
@@ -131,7 +141,12 @@ class Ball {
             })
              
         } else if (this.y > height) {
-            updateScore("Oooops!").then(() => {
+            const looseMsgs = [
+                "тупо лох, проебал очко",
+                "бля, проебал очело",
+                "8=====D"
+            ]
+            updateScore(looseMsgs[Math.floor(Math.random() * 2)]).then(() => {
                 enemyScore++;
                 setTimeout(() => {
                     gameReturn();
