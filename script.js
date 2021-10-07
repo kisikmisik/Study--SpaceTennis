@@ -6,7 +6,7 @@ let playing = true; // while this true, animation continues
 
 const animationTime = 10;
 let winPoints = 5 // determine score to win or lose 
-let botSpeed = 4; // bot difficulty. 6 is hard, 4 is medium, 3 is easy
+let botSpeed = 3; // bot difficulty. 6 is hard, 4 is medium, 3 is easy
 let yourScore = 0;
 let enemyScore = 0;
 
