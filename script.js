@@ -1,11 +1,15 @@
 // find the canvas and determine some usable variables
-const canvas = document.getElementById("canvas");
+let screenWidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+if (screenWidth < 800) {
+    alert("ЗАЙДИ С КОМПА ЕПТЫ!")
+} else {
+    const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 let playing = true; // while this true, animation continues
 
 const animationTime = 10;
-let winPoints = 5 // determine score to win or lose 
+let winPoints = 1 // determine score to win or lose 
 let botSpeed = 3; // bot difficulty. 6 is hard, 4 is medium, 3 is easy
 let yourScore = 0;
 let enemyScore = 0;
@@ -233,3 +237,5 @@ let botAnimation = () => {
 
 botAnimation();
 gameAnimation();
+}
+
